@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-struct Statement {
+pub struct Statement {
   state: char, // a or c
   value: Option<u32>,
   comp: Option<&'static str>,
@@ -79,10 +79,28 @@ impl Statement {
       None => "000".to_string(),
       Some(x) => match x {
         "JGT" => {
-          return format!("{:0>3b}", 001);
+          return format!("{}", "001");
+        }
+        "JEQ" => {
+          return format!("{}", "010");
+        }
+        "JGE" => {
+          return format!("{}", "011");
+        }
+        "JLT" => {
+          return format!("{}", "100");
+        }
+        "JNE" => {
+          return format!("{}", "101");
+        }
+        "JLE" => {
+          return format!("{}", "110");
+        }
+        "JMP" => {
+          return format!("{}", "111");
         }
         _ => {
-          todo!()
+          panic!("{} is invalid Jump Code", x)
         }
       },
     }
@@ -109,5 +127,17 @@ mod statement_tests {
     assert_eq!(state_c.code(), "1110110000111000");
     let state_c = Statement::new('C', None, Some("A"), Some("AD"), Some("JGT"));
     assert_eq!(state_c.code(), "1110110000110001");
+    let state_c = Statement::new('C', None, Some("A"), Some("AD"), Some("JEQ"));
+    assert_eq!(state_c.code(), "1110110000110010");
+    let state_c = Statement::new('C', None, Some("A"), Some("AM"), Some("JGE"));
+    assert_eq!(state_c.code(), "1110110000101011");
+    let state_c = Statement::new('C', None, Some("A"), Some("AD"), Some("JLT"));
+    assert_eq!(state_c.code(), "1110110000110100");
+    let state_c = Statement::new('C', None, Some("A"), Some("AD"), Some("JNE"));
+    assert_eq!(state_c.code(), "1110110000110101");
+    let state_c = Statement::new('C', None, Some("A"), Some("AD"), Some("JLE"));
+    assert_eq!(state_c.code(), "1110110000110110");
+    let state_c = Statement::new('C', None, Some("A"), Some("AD"), Some("JMP"));
+    assert_eq!(state_c.code(), "1110110000110111");
   }
 }
