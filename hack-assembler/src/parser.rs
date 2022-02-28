@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::BufReader;
 
-mod statement;
+use crate::Statement;
 
 struct Parser;
 
@@ -19,16 +19,15 @@ impl Parser {
   //   }
   // }
 
-  pub fn parse_line(line: &str) -> statement::Statement {
+  pub fn parse_line(line: &str) -> Statement {
     match line.chars().nth(0) {
-      Some('@') => statement::Statement::new(
+      Some('@') => Statement::new(
         'A',
-        Some(line[..1].parse::<u32>().unwrap()), //銭湯を除いた文字列
+        Some(line.replace("@", "").parse().unwrap()),
         None,
         None,
         None,
       ),
-
       None => todo!(),
       _ => todo!(),
     }
@@ -38,18 +37,11 @@ impl Parser {
 #[cfg(test)]
 mod parser_tests {
   use super::*;
-
   #[test]
   fn test_ok() {
     assert_eq!(
       Parser::parse_line("@1"),
-      statement::Statement {
-        state: 'A',
-        value: Some(1),
-        comp: None,
-        dest: None,
-        jump: None
-      }
+      Statement::new('A', Some(1), None, None, None)
     )
   }
 }

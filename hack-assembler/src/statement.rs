@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Debug, PartialEq)]
 pub struct Statement {
   state: char, // a or c
   value: Option<u32>,
@@ -26,6 +27,7 @@ impl Statement {
   }
 
   fn code(&self) -> String {
+    println!("aaa");
     match self.state {
       'A' => format!("0{:0>15b}", self.value.unwrap()),
       'C' => {
