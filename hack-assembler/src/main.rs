@@ -4,7 +4,10 @@ mod statement;
 pub use crate::statement::Statement;
 
 fn main() {
-    let moji = "aaaa".chars().collect::<Vec<char>>();
-
-    println!("Hello, world!");
+    // split =,;
+    let mut moji: Vec<&str> = "A=D;JMP".split('=').rev().collect();
+    println!("{}", moji.len());
+    let mo = moji.pop().unwrap();
+    
+    println!("{:?}", mo);
 }
