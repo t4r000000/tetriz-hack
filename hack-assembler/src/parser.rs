@@ -139,6 +139,31 @@ mod parser_tests {
                 Statement::new('C', None, Some("D+A"), Some("M"), Some("JMP")),
                 Statement::new('C', None, None, None, Some("JEQ"))
             ]
+        );
+        assert_eq!(
+            Parser::parse_lines(
+                r#"// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems "
+// by Nisan and Schocken, MIT Press.
+// File name: projects/06/add/Add.asm
+
+// Computes R0 = 2 + 3  (R0 refers to RAM[0])
+
+@2
+D=A
+@3
+D=D+A
+@0
+M=D"#
+            ),
+            [
+                Statement::new('A', Some(2), None, None, None),
+                Statement::new('C', None, Some("A"), Some("D"), None),
+                Statement::new('A', Some(3), None, None, None),
+                Statement::new('C', None, Some("D+A"), Some("D"), None),
+                Statement::new('A', Some(0), None, None, None),
+                Statement::new('C', None, Some("D"), Some("M"), None)
+            ]
         )
     }
 }
