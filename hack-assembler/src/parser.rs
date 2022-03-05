@@ -1,24 +1,26 @@
 use std::fs::File;
-use std::io::BufReader;
-use std::str::ParseBoolError;
+use std::io::{BufReader, Read};
 
 use crate::Statement;
 
-struct Parser;
+pub struct Parser;
 
 impl Parser {
-    pub fn new() -> Self {
-        Parser {}
+    pub fn parse(path: &str) -> Vec<u8> {
+        let mut buf: Vec<u8> = Vec::new();
+        let f = match File::open(path) {
+            Ok(x) => x,
+            _ => panic!("invalid file path"),
+        };
+        let mut reader = BufReader::new(f);
+        reader.read_to_end(&mut buf).expect("panic at reading");
+
+        let mut result: Vec<u8> = Vec::new();
+        for bb in buf {
+            result.push(bb);
+        }
+        result
     }
-
-    // pub fn parse_lines(path: &str) {
-    //   let f = File::open(path);
-    //   let reader = BufReader::new(f);
-
-    //   for line in reader.lines() {
-    //     let line = line?;
-    //   }
-    // }
 
     pub fn parse_lines(src: &str) -> Vec<Statement> {
         let mut result: Vec<Statement> = Vec::new();

@@ -26,8 +26,7 @@ impl<'a> Statement<'a> {
         }
     }
 
-    fn code(&self) -> String {
-        println!("aaa");
+    pub fn code(&self) -> String {
         match self.state {
             'A' => format!("0{:0>15b}", self.value.unwrap()),
             'C' => {
@@ -44,11 +43,40 @@ impl<'a> Statement<'a> {
 
     fn comp_map(comp: Option<&str>) -> &str {
         let mut comp_map = HashMap::new();
+        comp_map.insert("0", "0101010");
+        comp_map.insert("1", "0111111");
+        comp_map.insert("-1", "0111010");
+        comp_map.insert("D", "0001100");
         comp_map.insert("A", "0110000");
+        comp_map.insert("!D", "0001101");
+        comp_map.insert("!A", "0110001");
+        comp_map.insert("-D", "0001111");
+        comp_map.insert("-A", "0110011");
+        comp_map.insert("D+1", "0011111");
+        comp_map.insert("A+1", "1101111");
+        comp_map.insert("D-1", "0001110");
+        comp_map.insert("A-1", "0110010");
+        comp_map.insert("D+A", "0000010");
+        comp_map.insert("D-A", "0010011");
+        comp_map.insert("A-D", "0000111");
+        comp_map.insert("D&A", "0000000");
+        comp_map.insert("D|A", "0010101");
+
+        comp_map.insert("M", "1110000");
+        comp_map.insert("!M", "1110001");
+        comp_map.insert("-M", "1110011");
+        comp_map.insert("M+1", "1110111");
+        comp_map.insert("M-1", "1110010");
+        comp_map.insert("D+M", "1000010");
+        comp_map.insert("D-M", "1010011");
+        comp_map.insert("M-D", "1000111");
+        comp_map.insert("D&M", "1000000");
+        comp_map.insert("D|M", "1010101");
+
         match comp {
             None => panic!("panic"),
             Some(x) => match comp_map.get(x) {
-                None => panic!("invalid code, map missmached"),
+                None => panic!("invalid code, map missmached{:?}", comp),
                 Some(x) => x,
             },
         }
