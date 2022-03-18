@@ -1,30 +1,39 @@
 use std::io::{BufRead, BufReader, Read};
-pub struct Commands {
+struct Commands {
     cmds: Vec<String>,
+    current_idx: usize,
 }
 
 trait Parser {
     fn new<R: Read>(f: BufReader<R>) -> Self;
-    // fn has_more_commands() -> bool;
-    // fn advance() {}
+    fn has_more_commands(&self) -> bool;
+    fn advance(&mut self) {}
     // fn command_type() -> String;
     // fn arg1() -> String;
     // fn arg2() -> i32;
 }
 
 impl Parser for Commands {
-    fn new<R: Read>(mut f: BufReader<R>) -> Commands {
+    fn new<R: Read>(f: BufReader<R>) -> Commands {
         let mut cmds: Vec<String> = Vec::new();
-        let mut line = String::new();
-        println!("loop 開始");
-        loop {
-            if f.read_line(&mut line).expect("panic! while readling Buf") == 0 {
-                break;
+
+        for line in f.lines() {
+            match line {
+                Ok(line) => cmds.push(line),
+                Err(e) => panic!("panic happened while reading buff, {}", e),
             }
-            cmds.push(line.to_string());
-            line.clear();
         }
-        Commands { cmds }
+        Commands {
+            cmds,
+            current_idx: 0,
+        }
+    }
+    fn has_more_commands(&self) -> bool {
+        self.current_idx < self.cmds.len()
+    }
+
+    fn advance(&mut self) {
+        self.current_idx += 1;
     }
 }
 
@@ -34,11 +43,34 @@ mod tests {
     use std::io::{BufReader, Cursor};
 
     #[test]
-    fn test_ok() {
+    fn test_new_parser() {
         let command = Cursor::new("push constant 7\npush constant 8");
         let readio = BufReader::new(command);
         let commands = Commands::new(readio);
-        println!("print {:?}", commands.cmds);
-        assert_eq!(2 + 2, 4);
+        let result = vec!["push constant 7", "push constant 8"];
+        assert_eq!(result, commands.cmds);
+    }
+
+    #[test]
+    fn test_has_more_cmds() {
+        let command = Cursor::new("push constant 7\n");
+        let readio = BufReader::new(command);
+        let mut commands = Commands::new(readio);
+        let result_true = commands.has_more_commands();
+        assert_eq!(result_true, true);
+        commands.advance();
+        let result_false = commands.has_more_commands();
+        assert_eq!(result_false, false);
+    }
+
+    fn test_has_commands_type() {
+        let command = Cursor::new("push constant 7\n");
+        let readio = BufReader::new(command);
+        let mut commands = Commands::new(readio);
+        let result_true = commands.has_more_commands();
+        assert_eq!(result_true, true);
+        commands.advance();
+        let result_false = commands.has_more_commands();
+        assert_eq!(result_false, false);
     }
 }
